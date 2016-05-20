@@ -10,9 +10,10 @@ from analysis_ee_ZH_cfg import *
 import os
 import copy
 import heppy.framework.config as cfg
+import functools
 
 from heppy.framework.event import Event
-Event.print_patterns=['*hadrons*', '*zeds*']
+# Event.print_patterns=['*hadrons*', '*zeds*']
 
 import logging
 # next 2 lines necessary to deal with reimports from ipython
@@ -35,12 +36,11 @@ ee_Z_ddbar = cfg.Component(
 ee_Z_bbbar = cfg.Component(
     'ee_Z_bbbar',
     files = [
-        'ee_Z_bbbar.root'
+        'ee_Z_bbbar.root',
     ]
 )
 
-
-selectedComponents = [ee_Z_bbbar]
+selectedComponents = [ee_Z_bbbar, ee_Z_ddbar]
 
 # read FCC EDM events from the input root file(s)
 # do help(Reader) for more information
@@ -55,14 +55,31 @@ source = cfg.Analyzer(
 # Use a Filter to select stable gen particles for simulation
 # from the output of "source" 
 # help(Filter) for more information
+
+class Stable():
+    def __call__(self, x):
+        return x.status()==1 and abs(x.pdgid()) not in [12,14,16] and x.pt()>1e-5
+
+def stable(x):
+    return x.status()==1 and abs(x.pdgid()) not in [12,14,16] and x.pt()>1e-5
+    
 from heppy.analyzers.Filter import Filter
 gen_particles_stable = cfg.Analyzer(
     Filter,
     output = 'gen_particles_stable',
     # output = 'particles',
     input_objects = 'gen_particles',
-    filter_func = lambda x : x.status()==1 and abs(x.pdgid()) not in [12,14,16] and x.pt()>1e-5
+    # filter_func = lambda x : x.status()==1 and abs(x.pdgid()) not in [12,14,16] and x.pt()>1e-5
+    # filter_func = Stable()
+    filter_func = stable 
 )
+
+# class Wrapper(object):
+#     def __init__(self, func):
+#         self.func = func
+#     def __call__(self, *args, **kwargs):
+#         return self.func(*args, **kwargs)
+# gen_particles_stable.filter_func = Wrapper(gen_particles_stable.filter_func)
 
 # configure the papas fast simulation with the CMS detector
 # help(Papas) for more information
@@ -144,11 +161,11 @@ particle_tree = cfg.Analyzer(
 sequence = cfg.Sequence( [
     source,
     gen_particles_stable,
-    papas,
-    gen_jets,
-    gen_zeds,
-    jets,
-    zeds,
+    # papas,
+    # gen_jets,
+    # gen_zeds,
+    # jets,
+    # zeds,
     # charged_hadrons_from_b,
     # impact_parameter,
     # particle_tree
