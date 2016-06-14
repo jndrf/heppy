@@ -40,7 +40,7 @@ ee_Z_bbbar = cfg.Component(
     ]
 )
 
-selectedComponents = [ee_Z_bbbar, ee_Z_ddbar]
+selectedComponents = [ee_Z_ddbar]
 
 # read FCC EDM events from the input root file(s)
 # do help(Reader) for more information
@@ -97,6 +97,13 @@ papas = cfg.Analyzer(
     verbose = True
 )
 
+d_quarks = cfg.Analyzer(
+    Filter,
+    output = 'd_quarks',
+    input_objects = 'gen_particles',
+    filter_func = lambda x: abs(x.pdgid())==1 and x.status()==23
+)
+
 # Make jets from the particles not used to build the best zed.
 # Here the event is forced into 2 jets to target ZH, H->b bbar)
 # help(JetClusterizer) for more information
@@ -136,6 +143,8 @@ from heppy.analyzers.EventTextOutput import EventTextOutput
 print_ptcs = cfg.Analyzer(
     EventTextOutput,
     particles = 'gen_particles_stable',
+    jets = 'gen_jets',
+    quarks = 'd_quarks'
     )
 
 from heppy.analyzers.ChargedHadronsFromB import ChargedHadronsFromB
@@ -152,7 +161,9 @@ impact_parameter = cfg.Analyzer(
 from heppy.analyzers.ParticleTreeProducer import ParticleTreeProducer
 particle_tree = cfg.Analyzer(
     ParticleTreeProducer,
-    particles = 'particles'
+    particles = 'particles',
+    jets = 'gen_jets',
+    quarks = 'd_quarks'
     )
 
 
@@ -160,9 +171,11 @@ particle_tree = cfg.Analyzer(
 # the analyzers will process each event in this order
 sequence = cfg.Sequence( [
     source,
+    d_quarks,
     gen_particles_stable,
     # papas,
-    # gen_jets,
+    gen_jets,
+    print_ptcs,
     # gen_zeds,
     # jets,
     # zeds,

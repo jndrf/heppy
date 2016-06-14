@@ -261,6 +261,8 @@ class Particle(BaseParticle):
             return False
         
     def set_path(self, path, option=None):
+        '''Lucas call this with a new path, created with the new p4.
+        '''
         if option == 'w' or self.path is None:
             self.path = path
             self.track = Track(self.p3(), self.q(), self.path)

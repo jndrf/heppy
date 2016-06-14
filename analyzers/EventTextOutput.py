@@ -23,12 +23,16 @@ class SimpleParticle(object):
             )
     
 class SimpleEvent(object):
-    def __init__(self, ievent, ptcs):
+    def __init__(self, ievent, ptcs, jets, quarks):
         self.ievent = ievent
         self.ptcs = map(SimpleParticle, ptcs)
+        self.jets = map(SimpleParticle, jets)
+        self.quarks = map(SimpleParticle, quarks)
         self.data = dict(
             ievent = ievent,
-            particles = [ptc.get_data() for ptc in self.ptcs]
+            particles = [ptc.get_data() for ptc in self.ptcs],
+            jets = [jet.get_data() for jet in self.jets],
+            quarks = [quark.get_data() for quark in self.quarks],            
             )
 
     def get_data(self):
@@ -36,7 +40,12 @@ class SimpleEvent(object):
         
     def __str__(self):
         lines = ['event {iev}'.format(iev=self.ievent)]
+        lines += '\tParticles:'
         lines.extend( map(str, self.ptcs) )
+        lines += '\tJets:'
+        lines.extend( map(str, self.jets) )        
+        lines += '\tQuarks:'
+        lines.extend( map(str, self.quarks) )        
         return '\n'.join(lines)
         
         
@@ -49,7 +58,12 @@ class EventTextOutput(Analyzer):
 
     def process(self, event):
         ptcs = getattr(event, self.cfg_ana.particles )
-        self.events.append(SimpleEvent(event.iEv, ptcs).get_data()) 
+        jets = getattr(event, self.cfg_ana.jets)
+        quarks = getattr(event, self.cfg_ana.quarks)
+        self.events.append(SimpleEvent(event.iEv,
+                                       ptcs,
+                                       jets,
+                                       quarks).get_data()) 
         
     def endLoop(self, setup):
         super(EventTextOutput, self).endLoop(setup)
@@ -61,9 +75,18 @@ class EventTextOutput(Analyzer):
 if __name__ == '__main__':
 
     import pprint
-    sh = shelve.open(outfilename)
+    import sys
+    sh = shelve.open(sys.argv[1])
     events = sh['events']
     for event in events:
         print 'event', event['ievent']
+        print 'quarks:'
+        for pdgid, theta, phi, energy in event['quarks']:
+            print '\t', pdgid, theta, phi, energy
+        print 'jets:'
+        for dummy, theta, phi, energy in event['jets']:
+            print '\t', theta, phi, energy
+        print 'particles:'
         for pdgid, theta, phi, energy  in event['particles']:
             print '\t', pdgid, theta, phi, energy
+            

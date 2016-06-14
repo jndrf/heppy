@@ -28,7 +28,7 @@ class Identifier(long):
     
     @staticmethod    
     def make_id(item, type):
-        x = id(item)
+        x = id(item) #COLIN replace by static counter 
         value = type <<40
         return value | x
    
