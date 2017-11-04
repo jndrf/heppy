@@ -148,7 +148,7 @@ def main( options, args, parser ):
     # open the cfg, and create the config for each job
     file = open( cfgFileName, 'r' )
     sys.path.append( os.path.dirname(cfgFileName) )
-    cfg = imp.load_source( 'heppy.__cfg_to_run__', 
+    cfg = imp.load_source( '__cfg_to_run__', 
                            cfgFileName, file)
     
     selComps = [comp for comp in cfg.config.components if len(comp.files)>0]
@@ -156,10 +156,7 @@ def main( options, args, parser ):
 
     # track the versions
     versions = None
-    to_track = options.track_versions.split(',')
-    to_track.append('heppy')
-    cfg.config.versions = Versions(cfgFileName,
-                                   to_track)
+    cfg.config.versions = Versions(cfgFileName)
     if len(selComps)>options.ntasks:
         print "WARNING: too many threads {tnum}, will just use a maximum of {jnum}.".format(tnum=len(selComps),jnum=options.ntasks)
     if not createOutputDir(outDir, selComps, options.force):
@@ -171,7 +168,7 @@ def main( options, args, parser ):
         import heppy.framework.heppy_loop as ML 
         for comp in selComps:
             pool.apply_async( ML.runLoopAsync,
-                              [comp, outDir, 'heppy.__cfg_to_run__', cfgFileName, options],
+                              [comp, outDir, '__cfg_to_run__', cfgFileName, options],
                               callback=ML.callBack)
         pool.close()
         pool.join()
