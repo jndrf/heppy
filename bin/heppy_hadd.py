@@ -113,7 +113,8 @@ def haddRec(odir, idirs):
 ##        print 
 ##        raise
     for root,dirs,files in os.walk( idirs[0] ):
-        # print root, dirs, files
+        print 'moepmoepmoepmoepmoep'
+        print root, '\n', dirs,'\n', files
         for dir in dirs:
             dir = '/'.join([root, dir])
             dir = dir.replace(idirs[0], odir)
@@ -131,7 +132,7 @@ def haddChunks(idir, removeDestDir, cleanUp=False, base_odir='./'):
     for path in sorted(os.listdir(idir)):
         filepath = '/'.join( [basedir, idir, path] )
         if os.path.isdir(filepath):
-            compdir = path
+            compdir = filepath
             try:
                 prefix,num = compdir.split('_Chunk')
             except ValueError:
@@ -146,7 +147,7 @@ def haddChunks(idir, removeDestDir, cleanUp=False, base_odir='./'):
         return
     for comp, cchunks in chunks.iteritems():
         # odir = base_odir+'/'+'/'.join( [idir, comp] )
-        odir = '/'.join( [base_odir, comp] )
+        odir = comp #'/'.join( [idir, comp] )
         print odir, cchunks
         if removeDestDir:
             if os.path.isdir( odir ):
