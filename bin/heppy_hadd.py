@@ -19,7 +19,7 @@ def haddPck(file, odir, idirs):
     '''
     objsum = None
     basedir = os.getcwd()
-    fileName = os.path.basename(file)
+    fileName = file # os.path.basename(file)
     for dirpath in idirs:
         # fileName = file.replace( idirs[0], dirpath )
         os.chdir(dirpath)
