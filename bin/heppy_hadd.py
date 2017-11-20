@@ -127,8 +127,9 @@ def haddRec(odir, idirs):
 def haddChunks(idir, removeDestDir, cleanUp=False, base_odir='./'):
     chunks = {}
     nchunks = {}
+    basedir = os.getcwd()
     for path in sorted(os.listdir(idir)):
-        filepath = '/'.join( [idir, path] )
+        filepath = '/'.join( [basedir, idir, path] )
         if os.path.isdir(filepath):
             compdir = path
             try:
