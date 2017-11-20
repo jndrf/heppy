@@ -39,7 +39,6 @@ def haddPck(file, odir, idirs):
                 
     oFileName = file.replace( idirs[0], odir )
     pckfile = open(oFileName, 'w')
-    print 'output:', oFileName
     pickle.dump(objsum, pckfile, protocol=-1)
     txtFileName = oFileName.replace('.pck','.txt')
     txtFile = open(txtFileName, 'w')
@@ -113,8 +112,6 @@ def haddRec(odir, idirs):
 ##        print 
 ##        raise
     for root,dirs,files in os.walk( idirs[0] ):
-        print 'moepmoepmoepmoepmoep'
-        print root, '\n', dirs,'\n', files
         for dir in dirs:
             dir = '/'.join([root, dir])
             dir = dir.replace(idirs[0], odir)
