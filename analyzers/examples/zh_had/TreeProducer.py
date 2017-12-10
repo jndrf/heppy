@@ -22,13 +22,17 @@ class TreeProducer(Analyzer):
         bookParticle(self.tree, 'zed')
         bookLepton(self.tree, 'lepton1')
         bookLepton(self.tree, 'lepton2')
-        
-       
+
+        var(self.tree, 'n_jets')
+        var(self.tree, 'n_bjets')
+        var(self.tree, 'n_iso_leptons')
+               
     def process(self, event):
         self.tree.reset()
         misenergy = getattr(event, self.cfg_ana.misenergy)
         fillParticle(self.tree, 'misenergy', misenergy )        
         jets = getattr(event, self.cfg_ana.jets)
+
         for ijet, jet in enumerate(jets):
             if ijet==4:
                 break
@@ -47,6 +51,11 @@ class TreeProducer(Analyzer):
             fillLepton(self.tree,
                        'lepton{ilep}'.format(ilep=ilep+1), 
                        lepton)
+
+        fill(self.tree, 'n_jets', len(jets))
+        bjets = [jet for jet in jets if jet.tags['b']]
+        fill(self.tree, 'n_bjets', len(bjets))
+        fill(self.tree, 'n_iso_leptons', len(event.sel_iso_leptons))
         self.tree.tree.Fill()
         
     def write(self, setup):
