@@ -3,7 +3,7 @@ from heppy.framework.analyzer import Analyzer
 from heppy.papas.data.historyhelper import HistoryHelper
 from heppy.analyzers.ChargedHadronsFromB import is_ptc_from_b
 from heppy.particles.genbrowser import GenBrowser
-from heppy.papas.data.identifier import Identifier
+from heppy.papas.data.idcoder import IdCoder
 
 def is_matched_to_b(jet):
     '''returns true if jet.match is a b quark.
@@ -78,6 +78,7 @@ class ParametrizedBTagger(Analyzer):
         jets = getattr(event, self.cfg_ana.input_jets)
         for jet in jets:
             is_bjet = is_from_b(jet, event)
-            is_btagged = self.cfg_ana.roc.is_tagged(is_bjet)
-            jet.tags['b'] = is_btagged
             jet.tags['bmatch'] = is_bjet
+            if self.cfg_ana.roc:
+                is_btagged = self.cfg_ana.roc.is_tagged(is_bjet)
+                jet.tags['b'] = is_btagged

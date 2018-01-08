@@ -21,8 +21,7 @@ def haddPck(file, odir, idirs):
     basedir = os.getcwd()
     fileName = os.path.basename(file)
     for dirpath in idirs:
-        # fileName = file.replace( idirs[0], dirpath )
-        os.chdir(dirpath)
+        fileName = file.replace( idirs[0], dirpath )
         pckfile = open(fileName)
         sys.path.insert(0, dirpath)
         obj = pickle.load(pckfile)
@@ -137,7 +136,7 @@ def haddChunks(idir, removeDestDir, cleanUp=False, base_odir='./'):
                 # ok, not a chunk
                 continue
             nchunks[prefix] = nchunks.setdefault(prefix, 0) + 1
-            code = check_chunk(compdir)
+            code = check_chunk(filepath)
             if code == 1:
                 chunks.setdefault( prefix, list() ).append(filepath)
     if len(chunks)==0:
@@ -154,7 +153,7 @@ def haddChunks(idir, removeDestDir, cleanUp=False, base_odir='./'):
         data = {
             'processing' : {
                 'ngoodfiles' : len(cchunks),
-                'nfiles' : nchunks[prefix]
+                'nfiles' : nchunks[comp]
             }   
         }   
         with open('/'.join([odir, 'processing.yaml']), 'w') as outyaml:
